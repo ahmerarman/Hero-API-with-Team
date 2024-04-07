@@ -1,0 +1,22 @@
+poetry add fastapi sqlmodel "uvicorn[standard]"
+
+Next step is create rows with fastapi
+
+github commands:
+
+https://github.com/ahmerarman/Hero-API-with-Team.git
+
+First time adding files:
+
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/ahmerarman/Hero-API-with-Team.git
+git push -u origin main
+
+Update files:
+
+git remote add origin https://github.com/ahmerarman/Hero-API-with-Team.git
+git branch -M main
+git push -u origin main
