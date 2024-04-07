@@ -7,10 +7,13 @@ from sqlmodel.pool import StaticPool
 from hero_api.model.database import Hero, Team
 import os
 from dotenv import load_dotenv
+#from app import settings
 
 load_dotenv()
 
 connection_string = os.getenv("TEST_DATABASE_URL")
+"""connection_string = str(settings.TEST_DATABASE_URL).replace(
+    "postgresql", "postgresql+psycopg")"""
 
 if connection_string is None:
     raise EnvironmentError("TEST_DATABASE_URL not found in .env file.")
@@ -18,12 +21,18 @@ if connection_string is None:
 @pytest.fixture(name="session")
 def session_fixture():
     engine = create_engine(connection_string, echo=True)
+    """engine = create_engine(connection_string,
+                            connect_args={"sslmode": "require"}, 
+                            pool_recycle=300,
+                            echo=True
+                        )"""
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         yield session
 
 @pytest.fixture(name="client")
 def client_fixture(session: Session):
+    # sourcery skip: inline-immediately-yielded-variable
     def get_session_override():
         return session
     app.dependency_overrides[get_session] = get_session_override
