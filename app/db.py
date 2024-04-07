@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 connection_string = os.getenv("DATABASE_URL")
+
 """connection_string = str(settings.DATABASE_URL).replace(
     "postgresql", "postgresql+psycopg"
 )"""
@@ -14,6 +15,7 @@ if connection_string is None:
     raise EnvironmentError("DATABASE_URL not found in .env file.")
 
 engine = create_engine(connection_string, echo=True)
+
 """engine = create_engine(
     connection_string,
     connect_args={"sslmode": "require"}, 
