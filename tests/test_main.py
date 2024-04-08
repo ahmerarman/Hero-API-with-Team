@@ -5,31 +5,26 @@ from app.db import get_session
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 from hero_api.model.database import Hero, Team
-import os
-from dotenv import load_dotenv
-#from app import settings
+#import os
+#from dotenv import load_dotenv
+from app import settings
 
-load_dotenv()
+#load_dotenv()
 
-connection_string = os.getenv("TEST_DATABASE_URL")
+#connection_string = os.getenv("TEST_DATABASE_URL")
 
-"""connection_string = str(settings.TEST_DATABASE_URL).replace(
-    "postgresql", "postgresql+psycopg")"""
+connection_string = str(settings.TEST_DATABASE_URL).replace(
+    "postgresql", "postgresql+psycopg")
 
 if connection_string is None:
     raise EnvironmentError("TEST_DATABASE_URL not found in .env file.")
 
-
 @pytest.fixture(name="session")
 def session_fixture():
-    engine = create_engine(connection_string, echo=True)
-
-    """engine = create_engine(connection_string,
-                            connect_args={"sslmode": "require"}, 
-                            pool_recycle=300,
+    #engine = create_engine(connection_string, echo=True)
+    engine = create_engine(connection_string,
                             echo=True
-                        )"""
-
+                        )
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         yield session
@@ -272,11 +267,7 @@ def test_delete_team(session: Session, client: TestClient):
     team_1 = Team(name="Team 1", headquarters="Karachi")
     session.add(team_1)
     session.commit()
-
     response = client.delete(f"/teams/{team_1.id}")
-
     team_in_db = session.get(Team, team_1.id)
-
     assert response.status_code == 200
-
     assert team_in_db is None
