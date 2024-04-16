@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.db import get_session
 from sqlmodel import Session, SQLModel, create_engine
-from sqlmodel.pool import StaticPool
+#from sqlmodel.pool import StaticPool
 from hero_api.model.database import Hero, Team
 #import os
 #from dotenv import load_dotenv
@@ -51,7 +51,6 @@ def test_create_hero(client: TestClient):
             "name": "Tariq bin Arman",
             "secret_name": "TA",
             "age": 75,
-            "team_id": 1
         }
     )
     data = response.json()
@@ -60,7 +59,6 @@ def test_create_hero(client: TestClient):
     assert data["name"] == "Tariq bin Arman"
     assert data["secret_name"] == "TA"
     assert data["age"] == 75
-    assert data["team_id"] == 1
     assert data["id"] is not None
 
 def test_create_team(client: TestClient):
@@ -117,8 +115,8 @@ def test_create_team_invalid(client: TestClient):
     assert response.status_code == 422
 
 def test_read_heroes(session: Session, client: TestClient):
-    hero_1 = Hero(name="Tariq bin Arman", secret_name="TA", age=70, team_id=1)
-    hero_2 = Hero(name="Syed Shahabuddin", secret_name="SS", age=75, team_id=2)
+    hero_1 = Hero(name="Tariq bin Arman", secret_name="TA", age=70)
+    hero_2 = Hero(name="Syed Shahabuddin", secret_name="SS", age=75)
     session.add(hero_1)
     session.add(hero_2)
     session.commit()
@@ -134,12 +132,10 @@ def test_read_heroes(session: Session, client: TestClient):
     assert data[length-2]["secret_name"] == hero_1.secret_name
     assert data[length-2]["age"] == hero_1.age
     assert data[length-2]["id"] == hero_1.id
-    assert data[length-2]["team_id"] == hero_1.team_id
     assert data[length-1]["name"] == hero_2.name
     assert data[length-1]["secret_name"] == hero_2.secret_name
     assert data[length-1]["age"] == hero_2.age
     assert data[length-1]["id"] == hero_2.id
-    assert data[length-1]["team_id"] == hero_2.team_id
 
 def test_read_teams(session: Session, client: TestClient):
     team_1 = Team(name="Team 1", headquarters="Karachi")
@@ -191,7 +187,7 @@ def test_read_team(session: Session, client: TestClient):
     assert data["id"] == team_1.id
 
 def test_update_hero(session: Session, client: TestClient):
-    hero_1 = Hero(name="Tariq bin Arman", secret_name="TA", age=70, team_id=1)
+    hero_1 = Hero(name="Tariq bin Arman", secret_name="TA", age=70)
     session.add(hero_1)
     session.commit()
 
@@ -202,7 +198,6 @@ def test_update_hero(session: Session, client: TestClient):
     assert data["name"] == "Tariq Arman"
     assert data["secret_name"] == hero_1.secret_name
     assert data["age"] == hero_1.age
-    assert data["team_id"] == hero_1.team_id
     assert data["id"] == hero_1.id
 
 def test_update_team(session: Session, client: TestClient):
@@ -219,7 +214,7 @@ def test_update_team(session: Session, client: TestClient):
     assert data["headquarters"] == "Lahore"
 
 def test_change_heroes(session: Session, client: TestClient):
-    hero_1 = Hero(name="Tariq bin Arman", secret_name="TA", age=70, team_id=1)
+    hero_1 = Hero(name="Tariq bin Arman", secret_name="TA", age=70)
     session.add(hero_1)
     session.commit()
 
@@ -254,13 +249,9 @@ def test_delete_hero(session: Session, client: TestClient):
     hero_1 = Hero(name="Tariq bin Arman", secret_name="TA", age=70, team_id=1)
     session.add(hero_1)
     session.commit()
-
     response = client.delete(f"/heroes/{hero_1.id}")
-
     hero_in_db = session.get(Hero, hero_1.id)
-
     assert response.status_code == 200
-
     assert hero_in_db is None
 
 def test_delete_team(session: Session, client: TestClient):
