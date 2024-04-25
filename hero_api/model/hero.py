@@ -19,3 +19,4 @@ class HeroBase(SQLModel):
 class Hero(HeroBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     team: Optional["Team"] = Relationship(back_populates="heroes") # type: ignore"""
+
