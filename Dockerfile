@@ -25,3 +25,11 @@ CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0"]
 
 # International certification Kubernties CNCF $395|Online
 # International certification Python
+
+
+# Docker compose commands
+# docker compose config
+# docker compose up --build -d
+# docker compose up -d
+
+# IPv-4 10.0.0.10

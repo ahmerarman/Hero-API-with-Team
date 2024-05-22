@@ -3,11 +3,19 @@ from app.db import get_session
 from hero_api.model.database import Hero
 from fastapi import APIRouter, HTTPException, Query, Depends
 from hero_api.schemas.schemas import HeroCreate, HeroRead, HeroUpdate, HeroUpdateComplete, HeroReadWithTeam
+from aiokafka import AIOKafkaProducer
 
 hero_router = APIRouter(prefix="/heroes", tags=["Hero"])
 
 @hero_router.post("/", response_model=HeroRead)
-def create_hero(*, session: Session = Depends(get_session), hero: HeroCreate):
+async def create_hero(*, session: Session = Depends(get_session), hero: HeroCreate):
+    producer = AIOKafkaProducer(bootstrap_servers='broker:19092')
+    await producer.start()
+    try:
+        await producer.send_and_wait("Order", b"Super message")
+    finally:
+        await producer.stop()
+
     db_hero = Hero.model_validate(hero)
     session.add(db_hero)
     session.commit()
